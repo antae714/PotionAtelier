@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36" version="26.0.6">
+  <diagram name="페이지-1" id="6sZbZPWftpOtGFX2wZGN">
+    <mxGraphModel dx="1900" dy="648" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-1" target="TOiK6AWEYGoC1RkYSkCD-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-1" target="TOiK6AWEYGoC1RkYSkCD-27" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-1" target="TOiK6AWEYGoC1RkYSkCD-30" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-1" target="TOiK6AWEYGoC1RkYSkCD-38" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ONME2IoM-aDgP6t2pFq-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="TOiK6AWEYGoC1RkYSkCD-1" target="5ONME2IoM-aDgP6t2pFq-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-1" value="Interactable" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="320" y="50" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-2" target="TOiK6AWEYGoC1RkYSkCD-14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-2" target="TOiK6AWEYGoC1RkYSkCD-35" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-2" value="Holdable" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="140" y="310" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-3" target="TOiK6AWEYGoC1RkYSkCD-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-3" target="TOiK6AWEYGoC1RkYSkCD-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="TOiK6AWEYGoC1RkYSkCD-3" target="TOiK6AWEYGoC1RkYSkCD-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-3" value="Cooker" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="140" y="130" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-4" value="CuttingBoardCooker" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="125" y="220" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-5" value="HandMillCooker" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="265" y="220" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-6" value="SqueezerCooker" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-15" y="220" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-12" value="상호작용 오브젝트 컴포넌트 구조" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="160" y="10" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-14" value="Ingredient" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="75" y="390" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-27" value="Deliver&lt;br&gt;Counter" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="265" y="130" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-30" value="Ingredient&lt;br&gt;Stand" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="390" y="130" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-35" value="Potion" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="210" y="390" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-37" value="원재료 수급대 -&amp;gt; 상호작용 -&amp;gt; 원재료 손에들기 -&amp;gt; Cooker류와 상호작용 -&amp;gt; QTE -&amp;gt; 완료시 손질된 재료 손에 들기 -&amp;gt; 양조 솥에 넣기 -&amp;gt; 두 개의 재료를 솥에 넣은 뒤 상호작용 -&amp;gt; 포션 손에 들기 -&amp;gt; 카운터 상호작용 -&amp;gt; 제출하기&amp;nbsp; &amp;nbsp;&amp;nbsp;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="495" y="40" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-38" value="Trash Bin" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="520" y="130" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TOiK6AWEYGoC1RkYSkCD-40" value="&amp;lt;- 손에 드는 그래픽만 있으면 되는 애들" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="265" y="315" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5ONME2IoM-aDgP6t2pFq-1" value="Cauldron" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="645" y="130" width="100" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
