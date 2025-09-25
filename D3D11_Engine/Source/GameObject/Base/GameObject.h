@@ -135,6 +135,7 @@ public:
 
 	/*전달 받은 부모까지의 계층 구조를 반환해줍니다.*/
 	std::vector<GameObject*> GetHierarchyToParent(GameObject* TargetParent);
+	void GetHierarchyToParent(std::vector<GameObject*>& OutVector);
 private:
 	void Start();
 	void FixedUpdate();

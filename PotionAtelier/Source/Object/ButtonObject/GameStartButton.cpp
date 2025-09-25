@@ -73,6 +73,16 @@ protected:
 	virtual void FixedUpdate() {}
 	virtual void Update() 
 	{
+		auto& input = inputManager.input;
+		if (input.IsKeyDown(KeyboardKeys::Space))
+		{
+			GameStartButton* ButtonObject = dynamic_cast<GameStartButton*>(&gameObject);
+			if (ButtonObject)
+			{
+				ButtonObject->eventListener.InvokeOnClickUp();
+			}
+		}
+
 		if (!isEvent) return;
 		timer += TimeSystem::Time.DeltaTime;
 		if (timer > 1.2f)
@@ -103,7 +113,7 @@ void GameStartButton::Awake()
 	eventListener.SetOnClickUp(
 		[this]()
 		{
-
+			eventListener.SetOnClickUp([]() {});
 			if (const auto& findItem = GameObject::Find<AudioPlayerObject>(L"SFX_Click"))
 			{
 				findItem->IsComponent<AudioBankClip>()->Play();
@@ -134,6 +144,10 @@ void SceneEventComponent::EventStart()
 
 	UI->gameObject.Active = true;
 	UI2->gameObject.Active = true;
+	UI->anchorMin.x = 0.5f;
+	UI->anchorMin.y = 0.5f;
+	UI->anchorMax.x = 0.5f;
+	UI->anchorMax.y = 0.5f;
 }
 
 void SceneEventComponent::Serialized(std::ofstream& ofs)
@@ -164,14 +178,21 @@ void SceneEventComponent::InspectorImguiDraw()
 void SceneEventComponent::Update()
 {
 	if (!isEvent) 		return;
+
 	if (GameManagerComponent* gm = GameManager::IsGM())
 	{
-		if (!CustomerSpawner::IsInit()) return;
+		//if (!CustomerSpawner::IsInit()) return;
+
 		if (!gm->IsInit())
-			return;	
+		{
+			return;
+		}
+		
+
 	}
 	if (TimeSystem::Time.DeltaTime > timer) 
 		return;
+
 	currentTime += TimeSystem::Time.DeltaTime;
 	if (currentTime > timer)
 	{

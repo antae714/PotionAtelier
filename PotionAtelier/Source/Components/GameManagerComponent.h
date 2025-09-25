@@ -119,7 +119,8 @@ private:
 	/*처리한 주문*/
 	int SuccessedOrder = 0;
 	int FailedOrder = 0;
-
+	
+	static int LastStageNum;
 	int stageNum = 0;
 
 	/*마지막 점수*/
@@ -137,7 +138,7 @@ private:
 	float uiElapsedTimes[UiArrayCount]{};
 	std::pair<std::wstring, UIMaterialObject*> uiArray[UiArrayCount];
 	bool hasUiObject[UiArrayCount]{};
-
+	
 	std::vector<UIMaterialObject*> UI_OrderSheetVec;
 	std::vector<Vector3> UI_OrderSheetStartPosVec;
 	std::vector<UIMaterialObject*> UI_PatienceBarVec;
@@ -349,7 +350,7 @@ public:
 
 	void StageLoad(int stageNum);
 	void StageRestart() { StageLoad(stageNum); }
-
+	void LastStageRestart();
 	/*스테이지 클리어*/
 	void StageClear();
 

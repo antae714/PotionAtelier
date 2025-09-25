@@ -79,6 +79,10 @@ class Cauldron : public Interactable
 	Vector2 fever_potion_pos_anchor_goal{};
 	float fever_potion_flew_speed{ 1.0f };
 
+	UIPoping* FeverSpaceUI;
+	UIPoping* FeverSpaceUI2;
+	float FeverSpaceChangeTime = 0.7f;
+	float FeverSpaceChangeCurrentTime = 0.0f;
 
 
 	class GameManagerComponent* gm{ nullptr };

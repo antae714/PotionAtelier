@@ -144,10 +144,12 @@ void MeshRender::InspectorImguiDraw()
 			}
 			if (ImGui::Button("Load Material Asset"))
 			{
+				materialAsset.ClearCache();
 				materialAsset.OpenAssetWithDialog();
 			}	
 			if(ImGui::Button(utfConvert::wstring_to_utf8(materialAsset.GetAssetPath()).c_str()))
 			{
+				materialAsset.ClearCache();
 				materialAsset.OpenAsset(materialAsset.GetAssetPath().c_str());
 			}
 

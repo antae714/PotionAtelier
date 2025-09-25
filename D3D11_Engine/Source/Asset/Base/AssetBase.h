@@ -154,6 +154,7 @@ void AssetBase<AssetData>::OpenAsset(const wchar_t* path)
 #else
 	startDeserialized = true;
 #endif // _EDITOR
+	assetPath = path;
 	if(startDeserialized)
 	{
 		std::ifstream ifs(path, std::ios::binary);
@@ -163,6 +164,5 @@ void AssetBase<AssetData>::OpenAsset(const wchar_t* path)
 		}
 		ifs.close();
 	}
-	assetPath = path;
 }
 

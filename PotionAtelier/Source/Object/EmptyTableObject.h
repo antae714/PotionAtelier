@@ -8,3 +8,11 @@ class EmptyTableObject : public GameObject
 public:
 	void Awake() override;
 };
+
+class ColloderObject : public GameObject
+{
+	SERIALIZED_OBJECT(ColloderObject);
+
+public:
+	void Awake() override;
+};

@@ -26,7 +26,7 @@ public:
 	void SetOnRightClickDown(std::function<void()> func) { this->on_right_click_down = func; }
 	void SetOnRightClickUp(std::function<void()> func) { this->on_right_click_up = func; }
 
-private:
+public:
 	void InvokeOnClickDown() { if (on_click_down != nullptr) on_click_down(); }
 	void InvokeOnClickUp() { if (on_click_up != nullptr) on_click_up(); }
 	void InvokeOnRightClickDown() { if (on_right_click_down != nullptr) on_right_click_down(); }

@@ -162,6 +162,22 @@ std::vector<GameObject*> GameObject::GetHierarchyToParent(GameObject* TargetPare
 	return hierarchy;
 }
 
+void GameObject::GetHierarchyToParent(std::vector<GameObject*>& OutVector)
+{
+	Transform* curr = &transform;
+
+	while (true)
+	{
+		if (curr->parent == nullptr)
+		{
+			return;
+		}
+		OutVector.push_back(&curr->gameObject);
+		curr = curr->parent;
+	}
+
+}
+
 void GameObject::Start()
 {
 	if (!startList.empty())

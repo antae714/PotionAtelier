@@ -383,7 +383,7 @@ void HandMillCooker::OnCook(PlayerController* controller)
 		if (clear) break;
 	}
 
-	if (sub_step == 4)
+	if (sub_step == 3)
 	{
 		++step;
 		JobDone(controller);

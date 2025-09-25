@@ -8,6 +8,7 @@ public:
 	float currentTime = 0;
 	bool isReverse = false;
 	bool isEventStart = false;
+	float StartDelay = 0.0f;
 	UIRenderComponenet2* UI;
 	UIRenderComponenet2* UI2;
 
@@ -46,3 +47,4 @@ public:
 	BoingBoingUI& boing;
 
 };
+

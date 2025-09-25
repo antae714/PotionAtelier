@@ -205,7 +205,13 @@ void Cauldron::Start()
 	overcook_warning_sign->Initialize(1, 0, overcook_warning_sign_size, overcook_warning_sign_anchor);
 	overcook_warning_sign->SetTexture(0, ResourceFinder::GetOvercookWarningSign());
 
-	
+	FeverSpaceUI = &AddComponent<UIPoping>();
+	FeverSpaceUI->Initialize(1, 0, { 154 * 0.75, 53 * 0.75 }, { 0, 35 + transform.GetPosition().z * 0.1f });
+	FeverSpaceUI->SetTexture(0, L"Resource/Textures/FeverSpace.png");
+
+	FeverSpaceUI2 = &AddComponent<UIPoping>();
+	FeverSpaceUI2->Initialize(1, 0, { 154 * 0.75, 53 * 0.75 }, { 0, 35 + transform.GetPosition().z * 0.1f});
+	FeverSpaceUI2->SetTexture(0, L"Resource/Textures/FeverSpace2.png");
 
 	if (const auto& findItem = GameObject::Find<AudioPlayerObject>(L"SFX_Boil"))
 	{
@@ -295,6 +301,46 @@ void Cauldron::Update()
 		Initialize();
 	}
 
+	if (gm->IsFever())
+	{
+
+		if (FeverSpaceUI->bubbles[0]->renderer->Enable == false
+			&& FeverSpaceUI2->bubbles[0]->renderer->Enable == false)
+		{
+			FeverSpaceUI->InstantDisappear(0);
+			FeverSpaceUI2->InstantAppear(0);
+		}
+
+
+		FeverSpaceChangeCurrentTime += Time.DeltaTime;
+		if (FeverSpaceChangeCurrentTime >= FeverSpaceChangeTime)
+		{
+			FeverSpaceChangeCurrentTime -= FeverSpaceChangeTime;
+			if (FeverSpaceUI->bubbles[0]->renderer->Enable == true)
+			{
+				FeverSpaceUI->InstantDisappear(0);
+				FeverSpaceUI2->InstantAppear(0);
+			}
+			else
+			{
+				FeverSpaceUI->InstantAppear(0);
+				FeverSpaceUI2->InstantDisappear(0);
+			}
+		}
+	}
+	else
+	{
+		if (FeverSpaceUI->bubbles[0]->renderer->Enable == true)
+		{
+			FeverSpaceUI->InstantDisappear(0);
+		}
+		if (FeverSpaceUI2->bubbles[0]->renderer->Enable == true)
+		{
+			FeverSpaceUI2->InstantDisappear(0);
+		}
+
+
+	}
 
 	if (step == 2)
 	{

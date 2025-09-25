@@ -61,10 +61,10 @@ private:
 
 	Vector2 anchor{ 0, 0 };
 	int jjuckk_offset_height = 60;
-	float section_range_min = 5.f;
-	float section_range_max = 20.f;
-	float section_offset_min = 20.f;
-	float section_offset_max = 80.f;
+	float section_range_min = 20.f;
+	float section_range_max = 30.f;
+	float section_offset_min = 40.f;
+	float section_offset_max = 60.f;
 	float section_range = 0.f;
 	float section_x = 0.f;
 	float fill_speed = 0.75f;
@@ -76,6 +76,7 @@ private:
 	float icon_y_delta{ 60 };
 	bool icon_show{ false };
 	bool on_focus{ false };
+	bool is_cook{ false };
 	class UIPoping* icon{ nullptr };
 
 	bool squeeze_success{ false };

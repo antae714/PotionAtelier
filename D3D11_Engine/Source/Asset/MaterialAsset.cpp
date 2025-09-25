@@ -68,7 +68,7 @@ void MaterialAsset::ReleaseSamplerState(uint32_t slot)
 	}
 }
 
-bool MaterialAsset::SetPixelShader(std::string shaderCode, bool isForward)
+bool MaterialAsset::SetPixelShader(const std::string& shaderCode, bool isForward)
 {
 	MaterialAssetData* data = GetAssetData();
 
@@ -78,7 +78,11 @@ bool MaterialAsset::SetPixelShader(std::string shaderCode, bool isForward)
 	ComPtr<ID3D11PixelShader> rhiPixelShader;
 	ComPtr<ID3D11ShaderReflection> reflector;
 	if (shaderCode.empty()) return false;
-	hlslManager.CreateShader(shaderCode.data(), shaderCode.size(), &rhiPixelShader, &reflector);
+
+	if (!LoadPixelShader(shaderCode, rhiPixelShader, reflector))
+	{
+		hlslManager.CreateShader(shaderCode.data(), shaderCode.size(), &rhiPixelShader, &reflector);
+	}
 
 	data->pixelShader.LoadShader(rhiPixelShader.Get());
 	data->pixelShader.isForward = isForward;
@@ -131,6 +135,79 @@ bool MaterialAsset::SetPixelShader(std::string shaderCode, bool isForward)
 	}
 	return true;
 }
+
+bool MaterialAsset::LoadPixelShader(const std::string& shaderCode, ComPtr<ID3D11PixelShader>& rhiPixelShader, ComPtr<ID3D11ShaderReflection>& reflector)
+{
+	using namespace std;
+	namespace fs = std::filesystem;
+
+	ComPtr< ID3DBlob> blob;
+
+	fs::path relativePath = fs::path(GetAssetPath());
+
+	// 상위 디렉토리 ".." 제거
+	fs::path sanitizedPath;
+	for (const auto& part : relativePath)
+	{
+		if (part == "..") continue;        // 상위 경로 제거
+		if (part == ".") continue;         // 현재 디렉토리 제거
+		sanitizedPath /= part;
+	}
+
+	fs::path cachePath = fs::path("CacheShader") / sanitizedPath;
+	cachePath.replace_extension(".cso");
+
+	std::error_code ec;
+	fs::create_directories(cachePath.parent_path(), ec);
+	if (ec) return false;
+
+	if (fs::exists(cachePath))
+	{
+		// 캐시된 블룹 파일 로드
+		if (FAILED(D3DReadFileToBlob(cachePath.wstring().c_str(), &blob)))
+			return false;
+	}
+	else
+	{
+		auto result = Utility::CompileShader(hlslManager.GetIncludePath(), shaderCode.data(), shaderCode.size(), "main", "ps_5_0", &blob);
+		if (FAILED(result)) return false;
+
+		// 블룹저장
+		if (FAILED(D3DWriteBlobToFile(blob.Get(), cachePath.wstring().c_str(), true)))
+			return false;
+
+	}
+	(RendererUtility::GetDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &rhiPixelShader));
+	(D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&reflector)));
+
+	return true;
+}
+
+void MaterialAsset::ClearCache()
+{
+	using namespace std;
+	namespace fs = std::filesystem;
+
+	fs::path relativePath = fs::path(GetAssetPath());
+
+	// 상위 디렉토리 ".." 제거
+	fs::path sanitizedPath;
+	for (const auto& part : relativePath)
+	{
+		if (part == "..") continue;        // 상위 경로 제거
+		if (part == ".") continue;         // 현재 디렉토리 제거
+		sanitizedPath /= part;
+	}
+
+	fs::path cachePath = fs::path("CacheShader") / sanitizedPath;
+	cachePath.replace_extension(".cso");
+
+	if (fs::exists(cachePath))
+	{
+		fs::remove(cachePath);
+	}
+}
+
 
 void MaterialAsset::SetCubeMapTexture(const wchar_t* path, uint32_t slot)
 {

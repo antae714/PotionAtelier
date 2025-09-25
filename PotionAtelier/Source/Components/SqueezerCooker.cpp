@@ -88,7 +88,7 @@ void SqueezerCooker::Update()
 void SqueezerCooker::OnFocusIn(PlayerController* controller)
 {
 	bool result = IsInteractable(controller);
-	if (result == false)
+	if (result == false && !is_cook)
 		return;
 
 	on_focus = true;
@@ -197,7 +197,7 @@ void SqueezerCooker::OnCook(PlayerController* controller)
 
 bool SqueezerCooker::IsInteractable(PlayerController* controller)
 {
-	if (controller->something_on_hand == false)
+ 	if (controller->something_on_hand == false)
 		return false;
 	if (controller->hold_type != HoldableType::Ingredient)
 		return false;
@@ -231,7 +231,7 @@ void SqueezerCooker::GameStart(IngredientType type)
 	}
 
 	step = 1;
-
+	is_cook = true;
 	UpdatePosition();
 	SetSuccessZone();
 	ProcessAnimation();
@@ -245,8 +245,8 @@ void SqueezerCooker::GameStart(IngredientType type)
 
 void SqueezerCooker::SetSuccessZone()
 {
-	section_x = Random::Range(section_offset_min, section_offset_max);
 	section_range = Random::Range(section_range_min, section_range_max);
+	section_x = Random::Range(section_range * 0.5f +10.f, 100.0f - section_range * 0.5f);
 
 }
 
@@ -254,26 +254,34 @@ void SqueezerCooker::ProcessAnimation()
 {
 
 	auto& input = inputManager.input;
-
-	if (input.IsKey(KeyboardKeys::Space))
+	if (!on_focus)
 	{
-		current_gauge += fill_speed * TimeSystem::Time.DeltaTime;
-	}
-	if (input.IsKeyUp(KeyboardKeys::Space))
-	{
+		current_gauge = 0.0f;
 
-		OnCook(cached_controller);
 	}
-	if (current_gauge > 1.0f)
-		Failed();
+	else
+	{
+		if (input.IsKey(KeyboardKeys::Space))
+		{
+			current_gauge += fill_speed * TimeSystem::Time.DeltaTime;
+		}
+		if (input.IsKeyUp(KeyboardKeys::Space))
+		{
+
+			OnCook(cached_controller);
+		}
+		if (current_gauge > 1.0f)
+			Failed();
+	}
 
 	float fill_width = current_gauge * 100.f;
-	float fill_x = std::floor(anchor.x - 50.0f + (fill_width * 0.5f));	// 반올림 처리 안하면 덜덜 거림
+	float fill_x = std::floor(anchor.x - bar_width * 0.5f + (fill_width * 0.5f) + 5.0f * (1.0f - current_gauge));	// 반올림 처리 안하면 덜덜 거림
+
 	jjuckkk.renderer[3]->SetTransform(fill_x, anchor.y, fill_width, bar_height);
 
 
 	float fill_width2 = section_range;
-	float fill_x2 = std::floor(anchor.x + section_x - 50.0f + (fill_width2 * 0.5f));	// 반올림 처리 안하면 덜덜 거림
+	float fill_x2 = std::floor(anchor.x - bar_width * 0.5f + (fill_width2 * 0.5f) + section_x);	// 반올림 처리 안하면 덜덜 거림
 	jjuckkk.renderer[2]->SetTransform(fill_x2, anchor.y, fill_width2 , bar_height);	// Section의 위치 랜덤 조정
 }
 

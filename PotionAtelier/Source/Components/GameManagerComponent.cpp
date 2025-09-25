@@ -13,7 +13,7 @@
 #include "Object/BackGroundMusicObject.h"
 #include "Object/GameManager.h"
 
-
+int GameManagerComponent::LastStageNum = 0;
 GameManagerComponent::GameManagerComponent() = default;
 
 GameManagerComponent::~GameManagerComponent()
@@ -684,6 +684,36 @@ void GameManagerComponent::UpdateStageStartEvent()
 	{
 		if (uiArray[PotionNewsUI].second->Active)
 		{
+			auto& input = inputManager.input;
+			if (input.IsKeyDown(KeyboardKeys::Space))
+			{
+				auto object = uiArray[PotionNewsUI].second;
+
+				if (object->Active)
+				{
+					if (SFX_NewsClick) SFX_NewsClick->Play();
+				}
+				object->Active = false;
+
+				if (BackGroundMusicObject* bgmObject = GameObject::Find<BackGroundMusicObject>(L"BackGroundMusic"))
+				{
+					if (BackGroundMusicComponent* BGM = bgmObject->component)
+					{
+						int stageNumt = std::clamp(stageNum, 1, 3);
+						auto temp =
+							BGM->eventParametors
+							| std::views::filter([](const BankEventParametor& parameter) { return parameter.name == "BGM_Change"; });
+						if (!temp.empty())
+						{
+							temp.front().value = std::format("Stage{}", stageNumt);
+						}
+						BGM->Play();
+						BGM->SetData("BGM_Change", std::format("Stage{}", stageNumt));
+					}
+				}
+
+
+			}
 			return;
 		}
 	}
@@ -933,10 +963,11 @@ void GameManagerComponent::UpdateTimerEvent()
 								button->gameObject.Active = false;
 								BoingBoingUI* boing = &button->gameObject.AddComponent<BoingBoingUI>();
 								boing->use_on_ui_render2 = true;
-								EventListener& event = button->gameObject.AddComponent<EventListener>();
-								event.SetOnClickDown(
-									[boing, this]
-									{ 
+								EventListener* eventListener = &button->gameObject.AddComponent<EventListener>();
+								eventListener->SetOnClickDown(
+									[boing, this, eventListener]
+									{
+										eventListener->SetOnClickDown([]() {});
 										boing->Boing(0);
 										auto event = GameObject::Find<SceneEventObject>(L"SceneEventObject");
 										if (event)
@@ -993,7 +1024,23 @@ void GameManagerComponent::UpdateTimerEvent()
 			if (hasUiObject[UIName::OderSheetUI])
 				uiArray[UIName::OderSheetUI].second->Active = false;
 			if (hasUiObject[UIName::FeverUI])
+			{
+				for (size_t i = 0; i < uiArray[UIName::FeverUI].second->transform.GetChildCount(); i++)
+				{
+					uiArray[UIName::FeverUI].second->transform.GetChild(i)->gameObject.Active = false;
+				}
+				
 				uiArray[UIName::FeverUI].second->Active = false;
+			}
+			if (hasUiObject[UIName::FeverVFX])
+			{
+				for (size_t i = 0; i < uiArray[UIName::FeverVFX].second->transform.GetChildCount(); i++)
+				{
+					uiArray[UIName::FeverVFX].second->transform.GetChild(i)->gameObject.Active = false;
+				}
+
+				uiArray[UIName::FeverVFX].second->Active = false;
+			}
 
 			/*목표 점수 달성*/
 			if (lastScore >= starScores[0])
@@ -1017,8 +1064,8 @@ void GameManagerComponent::UpdateTimerEvent()
 				Transform* starsParent = uiArray[UIName::GameResult].second->transform.GetChild(2);//별들
 				Transform* textParent = uiArray[UIName::GameResult].second->transform.GetChild(3); //점수
 				uiElapsedTimes[UIName::GameResult] += Time.DeltaTime;
-
-				if (inputManager.input.IsKeyUp(MouseKeys::leftButton))
+				
+				if (inputManager.input.IsKeyUp(MouseKeys::leftButton) || inputManager.input.IsKeyDown(KeyboardKeys::Space))
 					uiElapsedTimes[UIName::GameResult] = uiAnimationTime;
 
 				for (int i = 0; i < 3; i++)
@@ -1100,9 +1147,22 @@ void GameManagerComponent::UpdateTimerEvent()
 						}
 					}
 				}
+
 			}
-			else
+
+
+
+			if (Transform* button = uiArray[UIName::GameResult].second->transform.GetChild(1))
 			{
+				auto& input = inputManager.input;
+				if (input.IsKey(KeyboardKeys::Space) && button->gameObject.Active)
+				{
+					BoingBoingUI* boing = &button->gameObject.GetComponent<BoingBoingUI>();
+					boing->use_on_ui_render2 = true;
+					EventListener* eventListener = &button->gameObject.GetComponent<EventListener>();
+					eventListener->InvokeOnClickDown();
+
+				}
 
 			}
 		}
@@ -1142,6 +1202,7 @@ void GameManagerComponent::UpdateFever()
 	using namespace TimeSystem;
 	if (!hasUiObject[E_UIName::FeverUI])
 		return;
+
 
 	if (IsFever())
 	{
@@ -1251,8 +1312,8 @@ void GameManagerComponent::LoadGameManagerData()
 	if (!std::filesystem::exists(GameManagerDataPath))
 	{
 		SaveGameManagerData();
-	}
-	std::ifstream ifs(GameManagerDataPath, std::ios::binary);
+	}	
+	std::ifstream ifs(	GameManagerDataPath, std::ios::binary);
 	if (ifs.is_open())
 	{
 		int Version = Read::data<size_t>(ifs);
@@ -1276,268 +1337,246 @@ void GameManagerComponent::LoadGameManagerData()
 	{
 		E_UIName::UIName uiType = static_cast<E_UIName::UIName>(++i);
 		if (!path.empty())
-		{			
+		{
+			if (object)
+			{
+				GameObject::Destroy(object);
+			}
+
 #ifdef _EDITOR
 			if (!Scene::EditorSetting.IsPlay())
 				continue;
 #endif // _EDITOR
+
+			object = static_cast<UIMaterialObject*>(gameObjectFactory.DeserializedObject(path.c_str()));
+			object->Active = false;
 			bool isTutorial = stageNum == 0;
-			if(isTutorial == false)
-			{ 
-				if (object == nullptr)
-				{
-					object = static_cast<UIMaterialObject*>(gameObjectFactory.DeserializedObject(path.c_str()));
-					GameObject::DontDestroyOnLoad(object);
-				}
-			}	
-			else
+			switch (uiType)
 			{
-				if (E_UIName::TimerUI != uiType && E_UIName::ScoreUI != uiType && E_UIName::FeverUI != uiType)
+			case E_UIName::TimerUI:
+			{
+				//튜토 예외
+				if (isTutorial)
 				{
-					if (object == nullptr)
+					GameObject::Destroy(object);
+					object = nullptr;		
+				}
+				else
+				{
+					if (Transform* child = object->transform.GetChild(1))
+						TimerClock = static_cast<UIMaterialObject*>(&child->gameObject);
+					else
+						TimerClock = nullptr;
+					if (Transform* child = object->transform.GetChild(2))
+						TimerText = child->gameObject.IsComponent<TextRender>();
+					else
+						TimerText = nullptr;
+					if (Transform* child = object->transform.GetChild(3))
+						TimerBar = static_cast<UIMaterialObject*>(&child->gameObject);
+					else
+						TimerBar = nullptr;
+				}
+			}
+			break;
+			case E_UIName::ScoreUI:
+				//튜토 예외
+				if (isTutorial)
+				{
+					GameObject::Destroy(object);
+					object = nullptr;
+				}
+				else
+				{
+					if (Transform* child = object->transform.GetChild(3))
+						ScoreText = child->gameObject.IsComponent<TextRender>();
+					if (Transform* child = object->transform.GetChild(2))
 					{
-						object = static_cast<UIMaterialObject*>(gameObjectFactory.DeserializedObject(path.c_str()));
-						GameObject::DontDestroyOnLoad(object);
+						int childCount = child->GetChildCount();
+						UI_Star_FillVec.clear();
+						UI_Star_BGVec.clear();
+						for (int i = 0; i < childCount; i++)
+						{
+							if (i < childCount / 2)
+							{
+								UI_Star_FillVec.push_back((UIMaterialObject*)&child->GetChild(i)->gameObject);
+								UI_Star_FillVec[i]->Active = false;
+								UI_Star_FillVec[i]->AddComponent<BoingBoingUI>().use_on_ui_render2 = true;
+							}
+							else
+							{
+								UI_Star_BGVec.push_back((UIMaterialObject*)&child->GetChild(i)->gameObject);
+							}
+						}
+						UI_Star_BGVec.back()->Active = false;
+						UI_Star_FillVec.back()->uiComponenet.Enable = false;
+					}
+				}			
+				break;
+			case E_UIName::GameResult:
+			{
+				Transform* starsParent = object->transform.GetChild(2);//별들
+				for (int i = 0; i < starsParent->GetChildCount(); i++)
+				{
+					if (Transform* star = starsParent->GetChild(i))
+					{
+						star->gameObject.AddComponent<BoingBoingUI>().use_on_ui_render2 = true;
 					}
 				}
 			}
-
-			if (object)
+			break;
+			case E_UIName::OderSheetUI:
+				object->Active = true;
+				OrderSheetVec.clear();
+				OrderSheetAnimeSet.clear();
+				OrderSheetPositionX.clear();
+				OrderSheetVec.reserve(object->transform.GetChildCount());
+				OrderSheetAnimeSet.reserve(object->transform.GetChildCount());
+				OrderSheetPositionX.reserve(object->transform.GetChildCount());
+				for (size_t i = 0; i < object->transform.GetChildCount(); i++)
+				{
+					OrderSheet oderSheet(&object->transform.GetChild(i)->gameObject);
+					oderSheet.SetOrderSheetActiveEmpty();
+					oderSheet.UI_OrderSheet->gameObject.Active = false;
+					OrderSheetVec.push_back(oderSheet);
+					OrderSheetPositionX.push_back(OrderSheetVec[i].UI_OrderSheet->localPosition);
+				}
+				break;
+			case E_UIName::PotionNewsUI:
 			{
-				object->Active = false;
-				switch (uiType)
+				if (BackGroundMusicObject* bgmObject = GameObject::Find<BackGroundMusicObject>(L"BackGroundMusic"))
 				{
-				case E_UIName::TimerUI:
+					BGM = bgmObject->component;
+				}	
+				if (BGM)
 				{
-					//튜토 예외
-					if (isTutorial)
+					auto temp =
+						BGM->eventParametors
+						| std::views::filter([](const BankEventParametor& parameter) { return parameter.name == "BGM_Change"; });
+					if (!temp.empty())
 					{
-						GameObject::Destroy(object);
-						object = nullptr;
+						temp.front().value = "NewsPaper";
 					}
-					else
-					{
-						if (Transform* child = object->transform.GetChild(1))
-							TimerClock = static_cast<UIMaterialObject*>(&child->gameObject);
-						else
-							TimerClock = nullptr;
-						if (Transform* child = object->transform.GetChild(2))
-							TimerText = child->gameObject.IsComponent<TextRender>();
-						else
-							TimerText = nullptr;
-						if (Transform* child = object->transform.GetChild(3))
-							TimerBar = static_cast<UIMaterialObject*>(&child->gameObject);
-						else
-							TimerBar = nullptr;
-					}
+					BGM->Play();
+					BGM->SetData("BGM_Change", "NewsPaper");
 				}
-				break;
-				case E_UIName::ScoreUI:
-					//튜토 예외
-					if (isTutorial)
+				object->Active = true;
+				potionNewsUI.UI_News = object->transform.GetChild(1);
+				GameObject* xButtonObject = &potionNewsUI.UI_News->GetChild(0)->gameObject;
+				EventListener& xButtonEventListener = xButtonObject->AddComponent<EventListener>();
+				xButtonObject->AddComponent<BoingBoingUI>().use_on_ui_render2 = true;
+				xButtonEventListener.SetOnClickUp([this, object, xButtonObject]
 					{
-						GameObject::Destroy(object);
-						object = nullptr;
-					}
-					else
-					{
-						if (Transform* child = object->transform.GetChild(3))
-							ScoreText = child->gameObject.IsComponent<TextRender>();
-						if (Transform* child = object->transform.GetChild(2))
-						{
-							int childCount = child->GetChildCount();
-							UI_Star_FillVec.clear();
-							UI_Star_BGVec.clear();
-							for (int i = 0; i < childCount; i++)
+						xButtonObject->GetComponent<BoingBoingUI>().Boing(0);
+						TimeSystem::Time.DelayedInvok(
+							[this, object]
 							{
-								if (i < childCount / 2)
+								if (object->Active)
 								{
-									UI_Star_FillVec.push_back((UIMaterialObject*)&child->GetChild(i)->gameObject);
-									UI_Star_FillVec[i]->Active = false;
-									UI_Star_FillVec[i]->AddComponent<BoingBoingUI>().use_on_ui_render2 = true;
+									if (SFX_NewsClick) SFX_NewsClick->Play();
 								}
-								else
+								object->Active = false;
+
+								if (BackGroundMusicObject* bgmObject = GameObject::Find<BackGroundMusicObject>(L"BackGroundMusic"))
 								{
-									UI_Star_BGVec.push_back((UIMaterialObject*)&child->GetChild(i)->gameObject);
-								}
-							}
-							UI_Star_BGVec.back()->Active = false;
-							UI_Star_FillVec.back()->uiComponenet.Enable = false;
-						}
-					}
-					break;
-				case E_UIName::GameResult:
-				{
-					Transform* starsParent = object->transform.GetChild(2);//별들
-					for (int i = 0; i < starsParent->GetChildCount(); i++)
-					{
-						if (Transform* star = starsParent->GetChild(i))
-						{
-							star->gameObject.AddComponent<BoingBoingUI>().use_on_ui_render2 = true;
-						}
-					}
-				}
-				break;
-				case E_UIName::OderSheetUI:
-					object->Active = true;
-					OrderSheetVec.clear();
-					OrderSheetAnimeSet.clear();
-					OrderSheetPositionX.clear();
-					OrderSheetVec.reserve(object->transform.GetChildCount());
-					OrderSheetAnimeSet.reserve(object->transform.GetChildCount());
-					OrderSheetPositionX.reserve(object->transform.GetChildCount());
-					for (size_t i = 0; i < object->transform.GetChildCount(); i++)
-					{
-						OrderSheet oderSheet(&object->transform.GetChild(i)->gameObject);
-						oderSheet.SetOrderSheetActiveEmpty();
-						oderSheet.UI_OrderSheet->gameObject.Active = false;
-						OrderSheetVec.push_back(oderSheet);
-						OrderSheetPositionX.push_back(OrderSheetVec[i].UI_OrderSheet->localPosition);
-					}
-					break;
-				case E_UIName::PotionNewsUI:
-				{
-					if (BackGroundMusicObject* bgmObject = GameObject::Find<BackGroundMusicObject>(L"BackGroundMusic"))
-					{
-						BGM = bgmObject->component;
-					}
-					if (BGM)
-					{
-						auto temp =
-							BGM->eventParametors
-							| std::views::filter([](const BankEventParametor& parameter) { return parameter.name == "BGM_Change"; });
-						if (!temp.empty())
-						{
-							temp.front().value = "NewsPaper";
-						}
-						BGM->Play();
-						BGM->SetData("BGM_Change", "NewsPaper");
-					}
-					object->Active = true;
-					potionNewsUI.UI_News = object->transform.GetChild(1);
-					GameObject* xButtonObject = &potionNewsUI.UI_News->GetChild(0)->gameObject;
-					if (nullptr == xButtonObject->IsComponent<EventListener>())
-					{
-						EventListener& xButtonEventListener = xButtonObject->AddComponent<EventListener>();
-						xButtonEventListener.SetOnClickUp([this, object, xButtonObject]
-							{
-								xButtonObject->GetComponent<BoingBoingUI>().Boing(0);
-								TimeSystem::Time.DelayedInvok(
-									[this, object]
+									if (BackGroundMusicComponent* BGM = bgmObject->component)
 									{
-										if (object->Active)
+										int stageNumt = std::clamp(stageNum, 1, 3);
+										auto temp =
+											BGM->eventParametors
+											| std::views::filter([](const BankEventParametor& parameter) { return parameter.name == "BGM_Change"; });
+										if (!temp.empty())
 										{
-											if (SFX_NewsClick) SFX_NewsClick->Play();
+											temp.front().value = std::format("Stage{}", stageNumt);
 										}
-										object->Active = false;
-
-										if (BackGroundMusicObject* bgmObject = GameObject::Find<BackGroundMusicObject>(L"BackGroundMusic"))
-										{
-											if (BackGroundMusicComponent* BGM = bgmObject->component)
-											{
-												int stageNumt = std::clamp(stageNum, 1, 3);
-												auto temp =
-													BGM->eventParametors
-													| std::views::filter([](const BankEventParametor& parameter) { return parameter.name == "BGM_Change"; });
-												if (!temp.empty())
-												{
-													temp.front().value = std::format("Stage{}", stageNumt);
-												}
-												BGM->Play();
-												BGM->SetData("BGM_Change", std::format("Stage{}", stageNumt));
-											}
-										}
-									},
-									0.3f
-								);
-							});
-					}
-					if (nullptr == xButtonObject->IsComponent<BoingBoingUI>())
-					{
-						xButtonObject->AddComponent<BoingBoingUI>().use_on_ui_render2 = true;
-					}
-					potionNewsUI.NewsTextUI = potionNewsUI.UI_News->GetChild(2);
-					potionNewsUI.NewsVec.clear();
-					for (int i = 0; i < potionNewsUI.NewsTextUI->GetChildCount(); i++)
-					{
-						potionNewsUI.NewsVec.push_back((UIMaterialObject*)&potionNewsUI.NewsTextUI->GetChild(i)->gameObject);
-						potionNewsUI.NewsVec.back()->Active = false;
-					}
-					potionNewsUI.StempUI = potionNewsUI.UI_News->GetChild(3);
-					potionNewsUI.StempVec.clear();
-					for (int i = 0; i < potionNewsUI.StempUI->GetChildCount(); i++)
-					{
-						potionNewsUI.StempVec.push_back((UIMaterialObject*)&potionNewsUI.StempUI->GetChild(i)->gameObject);
-						potionNewsUI.StempVec.back()->Active = false;
-					}
-					switch (stageNum)
-					{
-					case 1:
-						potionNewsUI.NewsVec[0]->Active = true;
-						potionNewsUI.NewsVec[1]->Active = true;
-						break;
-					case 2:
-					case 3:
-						if (stageNum == 2)
-						{
-							potionNewsUI.NewsVec[2]->Active = true;
-						}
-						else
-						{
-							potionNewsUI.NewsVec[7]->Active = true;
-						}
-						if (lastStarCount == 1)
-						{
-							potionNewsUI.NewsVec[3]->Active = true;
-							potionNewsUI.StempVec[0]->Active = true;
-						}
-						else if (lastStarCount == 2)
-						{
-							potionNewsUI.NewsVec[4]->Active = true;
-							potionNewsUI.StempVec[1]->Active = true;
-						}
-						else if (lastStarCount == 3)
-						{
-							potionNewsUI.NewsVec[5]->Active = true;
-							potionNewsUI.StempVec[2]->Active = true;
-						}
-						else if (lastStarCount == 4)
-						{
-							potionNewsUI.NewsVec[6]->Active = true;
-							potionNewsUI.StempVec[3]->Active = true;
-						}
-						else
-						{
-							//재시작시 신문 X
-							object->Active = false;
-						}
-						break;
-					default:
-						object->Active = false;
-						break;
-					}
+										BGM->Play();
+										BGM->SetData("BGM_Change", std::format("Stage{}", stageNumt));
+									}
+								}
+							},
+							0.3f
+						);
+					});
+				potionNewsUI.NewsTextUI = potionNewsUI.UI_News->GetChild(2);
+				potionNewsUI.NewsVec.clear();
+				for (int i = 0; i < potionNewsUI.NewsTextUI->GetChildCount(); i++)
+				{
+					potionNewsUI.NewsVec.push_back((UIMaterialObject*)&potionNewsUI.NewsTextUI->GetChild(i)->gameObject);
+					potionNewsUI.NewsVec.back()->Active = false;
 				}
-				break;
-				case E_UIName::FeverUI:
-					if (isTutorial == false)
+				potionNewsUI.StempUI = potionNewsUI.UI_News->GetChild(3);
+				potionNewsUI.StempVec.clear();
+				for (int i = 0; i < potionNewsUI.StempUI->GetChildCount(); i++)
+				{
+					potionNewsUI.StempVec.push_back((UIMaterialObject*)&potionNewsUI.StempUI->GetChild(i)->gameObject);
+					potionNewsUI.StempVec.back()->Active = false;
+				}
+				switch (stageNum)
+				{
+				case 1:
+					potionNewsUI.NewsVec[0]->Active = true;
+					potionNewsUI.NewsVec[1]->Active = true;
+					break;
+				case 2:
+				case 3:
+					if (stageNum == 2)
 					{
-						object->Active = true;
-						FeverFill = (UIMaterialObject*)&object->transform.GetChild(0)->gameObject;
-						FeverFill->uiComponenet.anchorMax.x = 0.f;
-						FeverFill->uiComponenet.SetTransform();
+						potionNewsUI.NewsVec[2]->Active = true;
 					}
 					else
 					{
+						potionNewsUI.NewsVec[7]->Active = true;
+					}
+					if (lastStarCount == 1)
+					{
+						potionNewsUI.NewsVec[3]->Active = true;
+						potionNewsUI.StempVec[0]->Active = true;
+					}
+					else if (lastStarCount == 2)
+					{
+						potionNewsUI.NewsVec[4]->Active = true;
+						potionNewsUI.StempVec[1]->Active = true;
+					}
+					else if (lastStarCount == 3)
+					{
+						potionNewsUI.NewsVec[5]->Active = true;
+						potionNewsUI.StempVec[2]->Active = true;
+					}
+					else if (lastStarCount == 4)
+					{
+						potionNewsUI.NewsVec[6]->Active = true;
+						potionNewsUI.StempVec[3]->Active = true;
+					}
+					else
+					{
+						//재시작시 신문 X
 						object->Active = false;
 					}
-					break;
-				case E_UIName::FeverVFX:
-
-
 					break;
 				default:
+					object->Active = false;
 					break;
 				}
+			}
+			break;
+			case E_UIName::FeverUI:
+				if (isTutorial)
+				{
+					GameObject::Destroy(object);
+					object = nullptr;
+				}
+				else
+				{
+					FeverFill = (UIMaterialObject*)&object->transform.GetChild(0)->gameObject;
+					FeverFill->uiComponenet.anchorMax.x = 0.f;
+					FeverFill->uiComponenet.SetTransform();
+				}
+				break;
+			case E_UIName::FeverVFX:
+				
+
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -1786,7 +1825,7 @@ void GameManagerComponent::LoadPotionWeightData()
 
 int GameManagerComponent::OrderPotion(PotionType potionType, const std::function<void()>& SuccessedCallBack, const std::function<void()>& FaildCallBack)
 {
-	if (!IsStageStart() || IsTimeEnd() || orderQueue.size() == 5)
+  	if (!IsStageStart() || IsTimeEnd() || orderQueue.size() == 5)
 		return -1;
 
 	for (int i = 0; i < OrderSheetVec.size(); ++i)
@@ -2077,12 +2116,20 @@ void GameManagerComponent::StageLoad(int _stageNum)
 		ResetFlags();
 		stageNum = _stageNum;
 		isinit = false;
-		int i = 0;
+		for (auto& [path, object] : uiArray)
+		{
+			object = nullptr;
+		}
 		memset(uiElapsedTimes, 0.f, sizeof(uiElapsedTimes));
 		LoadGameManagerData();
 		LoadStageData();
 		TimeSystem::Time.UpdateTime();
 	}
+}
+
+void GameManagerComponent::LastStageRestart()
+{
+	StageLoad(LastStageNum);
 }
 
 void GameManagerComponent::StageClear()
@@ -2092,6 +2139,7 @@ void GameManagerComponent::StageClear()
 
 void GameManagerComponent::MainMenuScene()
 {
+	LastStageNum = stageNum;
 	std::wstring wstr = L"EngineResource/MainMenu/MainMenu.Scene";
 	if (helper && helper->mainMenuPath.size())
 	{
@@ -2104,10 +2152,11 @@ void GameManagerComponent::MainMenuScene()
 
 void GameManagerComponent::EndingScene()
 {
+	LastStageNum = stageNum;
 	std::wstring wstr = L"TT.Scene";
-	if (helper && helper->mainMenuPath.size())
+	if (helper && helper->endingScenePath.size())
 	{
-		wstr.assign(helper->gameOverScenePath.begin(), helper->gameOverScenePath.end());
+		wstr.assign(helper->endingScenePath.begin(), helper->endingScenePath.end());
 	}
 	sceneManager.LoadScene(wstr.c_str());
 	ClearUIObjects();
@@ -2116,11 +2165,13 @@ void GameManagerComponent::EndingScene()
 
 void GameManagerComponent::GameOverScene()
 {
+	LastStageNum = stageNum;
 	std::wstring wstr = L"EngineResource/GameOverScene.Scene";
-	if (helper && helper->mainMenuPath.size())
+	if (helper && helper->gameOverScenePath.size())
 	{
 		wstr.assign(helper->gameOverScenePath.begin(), helper->gameOverScenePath.end());
 	}
+
 	sceneManager.LoadScene(wstr.c_str());
 	ClearUIObjects();
 	GameObject::Destroy(gameObject);

@@ -59,8 +59,23 @@ void EventManager::HandleClick(Vector2 position, EventType type)
 {
 	std::vector<UIRenderComponenet*> valid_ui1;
 	std::vector<UIRenderComponenet2*> valid_ui2;
+	std::vector<GameObject*> OutVector;
 	for (auto* ui : uis1)
 	{
+		/*bool isActiveDisable = false;
+		ui->gameObject.GetHierarchyToParent(OutVector);
+		for (auto& item : OutVector)
+		{
+			if (item->Active == false)
+			{
+				isActiveDisable = true;
+				break;
+			}
+		}
+		if (isActiveDisable)
+		{
+			continue;
+		}*/
 		if (ui->Enable == true && ui->gameObject.Active == true && ui->texture.GetSRV() != nullptr)
 		{
 			valid_ui1.push_back(ui);
@@ -68,6 +83,20 @@ void EventManager::HandleClick(Vector2 position, EventType type)
 	}
 	for (auto* ui : uis2)
 	{
+		/*bool isActiveDisable = false;
+		ui->gameObject.GetHierarchyToParent(OutVector);
+		for (auto& item : OutVector)
+		{
+			if (item->Active == false)
+			{
+				isActiveDisable = true;
+				break;
+			}
+		}
+		if (isActiveDisable)
+		{
+			continue;
+		}*/
 		if (ui->Enable == true && ui->gameObject.Active == true && ui->materialAsset.GetTexturesV2().size() > 0 && ui->this_is_mask == false)
 		{
 			valid_ui2.push_back(ui);

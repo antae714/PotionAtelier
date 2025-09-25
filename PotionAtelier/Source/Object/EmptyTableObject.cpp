@@ -10,3 +10,8 @@ void EmptyTableObject::Awake()
 	AddComponent<EmptyTable>();
 	AddComponent<BoingBoing>();
 }
+
+void ColloderObject::Awake()
+{
+	AddComponent<BoxCollider>();
+}

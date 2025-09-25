@@ -48,6 +48,7 @@ public:
 
 	void AddPath(std::filesystem::path path);
 	void RemovePath(std::filesystem::path path);
+	ID3DInclude* GetIncludePath();
 private:
 	std::map<std::wstring, ID3D11DeviceChild*> sharingShaderMap;
 	std::map<std::wstring, ID3D11InputLayout*> sharingInputLayoutMap;

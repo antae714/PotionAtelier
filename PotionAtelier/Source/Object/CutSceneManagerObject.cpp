@@ -95,44 +95,6 @@ public:
 		if (!UI) GameSceneLoad();
 		UI->componenet->WakeUp();
 	}
-protected:
-	virtual void FixedUpdate() {}
-	virtual void Update() 
-	{
-
-#ifdef _EDITOR
-		if (!Scene::EditorSetting.IsPlay()) return;
-#endif
-		if (isSceneLoad)
-		{
-			waitTIme += TimeSystem::Time.DeltaTime;
-			if (waitTIme >= 1.2f)
-			{
-				isSceneLoad = false;
-				GameManager::GetGM().StageLoad(0);
-			}
-		}
-		else
-		{
-			if (UI && !UI->componenet->IsWakeupEnd()) return;
-			auto& input = inputManager.input;
-			if (input.GetMouseState().leftButton)
-			{
-				++step;
-				UI = dynamic_cast<CutSceneObject*> (GameObject::Find(std::format(L"CutSceneObject{}", step).c_str()));
-				if (!UI)
-				{
-					GameSceneLoad();
-				}
-				else
-				{
-					UI->componenet->WakeUp();
-				}
-			}
-		}
-
-	}
-	virtual void LateUpdate() {}
 	void GameSceneLoad()
 	{
 		isSceneLoad = true;
@@ -149,6 +111,51 @@ protected:
 			}
 		}
 	}
+protected:
+	virtual void FixedUpdate() {}
+	virtual void Update() 
+	{
+
+#ifdef _EDITOR
+		if (!Scene::EditorSetting.IsPlay()) return;
+#endif
+
+		auto& input = inputManager.input;
+		if (input.IsKeyDown(KeyboardKeys::Escape))
+		{
+			GameSceneLoad();
+		}
+
+		if (isSceneLoad)
+		{
+			waitTIme += TimeSystem::Time.DeltaTime;
+			if (waitTIme >= 1.2f)
+			{
+				isSceneLoad = false;
+				GameManager::GetGM().StageLoad(0);
+			}
+		}
+		else
+		{
+			if (UI && !UI->componenet->IsWakeupEnd()) return;
+			if (input.GetMouseState().leftButton || input.IsKeyDown(KeyboardKeys::Space))
+			{
+				++step;
+				UI = dynamic_cast<CutSceneObject*> (GameObject::Find(std::format(L"CutSceneObject{}", step).c_str()));
+				if (!UI)
+				{
+					GameSceneLoad();
+				}
+				else
+				{
+					UI->componenet->WakeUp();
+				}
+			}
+		}
+
+	}
+	virtual void LateUpdate() {}
+	
 	float waitTIme = 0.0f;
 	bool isSceneLoad = false;
 private:
@@ -179,6 +186,15 @@ CutSceneManagerObject::CutSceneManagerObject()
 
 CutSceneManagerObject::~CutSceneManagerObject()
 {
+}
+
+void CutSceneManagerObject::Skip()
+{
+	CutSceneManagerComponet* ee = IsComponent<CutSceneManagerComponet>();
+	if (ee)
+	{
+		ee->GameSceneLoad();
+	}
 }
 
 
@@ -212,8 +228,11 @@ protected:
 
 				if (nextScenenPath.size())
 				{
-					std::wstring wstr = std::wstring(nextScenenPath.begin(), nextScenenPath.end());
-					sceneManager.LoadScene(wstr.c_str());
+
+					GameManager::GetGM().LastStageRestart();
+					//std::wstring wstr = std::wstring(nextScenenPath.begin(), nextScenenPath.end());
+					//wstr = 
+					//sceneManager.LoadScene(wstr.c_str());
 				}
 			}
 		}
@@ -221,7 +240,7 @@ protected:
 		{
 			if (UI && !UI->componenet->IsWakeupEnd()) return;
 			auto& input = inputManager.input;
-			if (input.GetMouseState().leftButton)
+			if (input.GetMouseState().leftButton || input.IsKeyDown(KeyboardKeys::Space))
 			{
 				++step;
 				UI = dynamic_cast<CutSceneObject*> (GameObject::Find(std::format(L"CutSceneObject{}", step).c_str()));

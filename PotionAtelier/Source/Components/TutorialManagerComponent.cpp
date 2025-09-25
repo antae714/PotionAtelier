@@ -7,6 +7,7 @@
 #include "UIPoping.h"
 #include "TextPoping.h"
 #include "../ResourceFinder.h"
+#include "Object/ButtonObject/GameStartButton.h"
 
 #include "DeliverCounter.h"
 #include "../Object/GameManager.h"
@@ -86,6 +87,26 @@ void TutorialManagerComponent::Start()
 
 	//StartTutorial();
 
+	if (GameManager::GetGM().GetCurrentStageNum() == 0)
+	{
+		std::wstring_view path = L"Resource/GameObject/TutorialSkip.GameObject";
+		tuto_skip_object = static_cast<UIMaterialObject*>(gameObjectFactory.DeserializedObject(path.data()));
+
+		if (tuto_skip_object)
+		{
+			EventListener* eventListener = &tuto_skip_object->AddComponent<EventListener>();
+			eventListener->SetOnClickDown(
+				[this, eventListener]
+				{
+					eventListener->SetOnClickDown([]() {});
+					NesxtScene();
+				}
+			);
+		}
+
+	}
+
+
 	tutorial_37_close_position = transform.position;
 }
 
@@ -150,6 +171,16 @@ void TutorialManagerComponent::StartTutorial()
 	on_tutorial = true;
 	step = 0;
 	sub_step = 0;
+	{
+		std::wstring_view path = L"Resource/GameObject/TutorialHint.GameObject";
+		tuto_popup_object = static_cast<UIMaterialObject*>(gameObjectFactory.DeserializedObject(path.data()));
+		tuto_popup_object->Active = false;
+	}
+	{
+		std::wstring_view path = L"Resource/GameObject/TutorialArrow.GameObject";
+		tuto_Arrow_object = static_cast<UIMaterialObject*>(gameObjectFactory.DeserializedObject(path.data()));
+		tuto_Arrow_object->Active = false;
+	}
 
 	step_funcs.clear();
 	step_funcs.push_back(std::bind(&TutorialManagerComponent::Step1, this));
@@ -239,6 +270,8 @@ void TutorialManagerComponent::Step1()
 		SetUpperText(StringResource::GetTutorialText(L"TT_6"));
 		ShowUpperText();
 
+		if(tuto_Arrow_object) tuto_Arrow_object->Active = true;
+
 		lock_move = false;
 		lock_interact = false;
 		lock_interact_ingredient_stand = false;
@@ -269,6 +302,8 @@ void TutorialManagerComponent::Step2()
 {
 	if (sub_step == 0)
 	{
+		if (tuto_Arrow_object) tuto_Arrow_object->Active = false;
+
 		player_textbubble->SetBubbleText(StringResource::GetTutorialText(L"TT_7"));
 	}
 	else if (sub_step == 1)
@@ -594,6 +629,9 @@ void TutorialManagerComponent::Step10()
 		SetUpperText(StringResource::GetTutorialText(L"TT_36"));
 		ShowUpperText();
 
+
+		tuto_popup_object->Active = true;
+
 		lock_move = false;
 		process_tutorial_by_press_key = false;
 
@@ -630,6 +668,7 @@ void TutorialManagerComponent::Step11()
 {
 	if (sub_step >= 0 && sub_step < 3)
 	{
+		tuto_popup_object->Active = false;
 		player_textbubble->SetBubbleText(StringResource::GetTutorialText(std::format(L"TT_{}", sub_step + 38)));
 	}
 	else if (sub_step == 3)
@@ -641,20 +680,39 @@ void TutorialManagerComponent::Step11()
 	}
 	else if (sub_step == 4)
 	{
-		tuto_popup->Enable = false;
-		UnlockAll();
-		on_tutorial = false;
-
-		Time.DelayedInvok(
-			[]()
-			{
-				GameManager::GetGM().StageLoad(1);
-			},
-			0.3f
-		);
+		NesxtScene();
 	}
 
 	++sub_step;
+}
+
+void TutorialManagerComponent::NesxtScene()
+{
+	if(tuto_popup_object) tuto_popup_object->Active = false;
+	if (tuto_skip_object) tuto_skip_object->Active = false;
+	if (tuto_Arrow_object) tuto_Arrow_object->Active = false;
+	tuto_popup->Enable = false;
+	UnlockAll();
+	on_tutorial = false;
+	auto event = GameObject::Find<SceneEventObject>(L"SceneEventObject");
+	if (event)
+	{
+		auto ui = event->componenet->UI;
+		if (ui)
+		{
+			ui->SetPosX(0);
+			ui->SetPosY(0);
+		}
+		event->componenet->isReverse = false;
+		event->componenet->EventStart();
+	}
+	Time.DelayedInvok(
+		[]()
+		{
+			GameManager::GetGM().StageLoad(1);
+		},
+		1.1f
+	);
 }
 
 void TutorialManagerComponent::Step12()

@@ -191,6 +191,11 @@ void HLSLManager::RemovePath(std::filesystem::path path)
 	includePath->RemovePath(path);
 }
 
+ID3DInclude* HLSLManager::GetIncludePath()
+{
+	return includePath.get();
+}
+
 void HLSLManager::CreateSharingShader(const wchar_t* path, ID3D11VertexShader** ppOut_VertexShader, ID3D11InputLayout** ppOut_InputLayout)
 {
 	auto findIter = sharingShaderMap.find(path);

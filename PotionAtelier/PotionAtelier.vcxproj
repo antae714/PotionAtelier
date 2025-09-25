@@ -162,7 +162,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_EDITOR;%(PreprocessorDefinitions);_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS;DIRECTX_TOOLKIT_DLL;DIRECTX_TOOLKIT_IMPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_EDITOR;%(PreprocessorDefinitions);_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -186,8 +186,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS;DIRECTX_TOOLKIT_DLL;DIRECTX_TOOLKIT_IMPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -215,7 +216,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_EDITOR;%(PreprocessorDefinitions);_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS;DIRECTX_TOOLKIT_DLL;DIRECTX_TOOLKIT_IMPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_EDITOR;%(PreprocessorDefinitions);_SILENCE_CXX20_CODECVT_FACETS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -238,6 +239,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Object\ButtonObject\CutSceneSkipButton.cpp" />
     <ClCompile Include="Source\Object\EmptyBoxColliderObject.cpp" />
     <ClCompile Include="Source\Object\CutSceneManagerObject.cpp" />
     <ClCompile Include="Source\Components\LightControllComponent.cpp" />
@@ -309,6 +311,7 @@
     <ClCompile Include="Source\Object\VideoObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Object\ButtonObject\CutSceneSkipButton.h" />
     <ClInclude Include="Source\Object\EmptyBoxColliderObject.h" />
     <ClInclude Include="Source\Object\CutSceneManagerObject.h" />
     <ClInclude Include="Source\Components\LightControllComponent.h" />

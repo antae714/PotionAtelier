@@ -161,6 +161,7 @@
     <ClCompile Include="Source\Object\CutSceneManagerObject.cpp" />
     <ClCompile Include="Source\Object\VideoObject.cpp" />
     <ClCompile Include="Source\Object\EmptyBoxColliderObject.cpp" />
+    <ClCompile Include="Source\Object\ButtonObject\CutSceneSkipButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scenes">
@@ -460,6 +461,7 @@
     <ClInclude Include="Source\Object\CutSceneManagerObject.h" />
     <ClInclude Include="Source\Object\VideoObject.h" />
     <ClInclude Include="Source\Object\EmptyBoxColliderObject.h" />
+    <ClInclude Include="Source\Object\ButtonObject\CutSceneSkipButton.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\Shader\EdgeDetection2.hlsl">

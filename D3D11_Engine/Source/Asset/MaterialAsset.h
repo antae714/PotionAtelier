@@ -2,6 +2,9 @@
 #include <Asset/Base/AssetBase.h>
 #include <DrawCommand.h>
 #include <map>
+#include <d3dcompiler.h>
+
+struct ID3D11ShaderReflection;
 
 enum class ETextureType 
 {
@@ -114,13 +117,15 @@ public:
 
 public:
 	void CopyAsset(const MaterialAsset& rhs);
-
+	
 	void ReleaseSamplerState(uint32_t slot);
 	void SetSamplerState(const D3D11_SAMPLER_DESC& desc, uint32_t slot);
 	void clearSamplers();
 public:
-	bool SetPixelShader(std::string shaderCode, bool isForward);
-	
+	bool SetPixelShader(const std::string& shaderCode, bool isForward);
+	bool LoadPixelShader(const std::string& shaderCode, ComPtr<ID3D11PixelShader>& rhiPixelShader, ComPtr<ID3D11ShaderReflection>& reflector);
+	void ClearCache();
+
 	template <typename T>
 	void SetCubeMapTexture(const wchar_t* path, T type)
 	{

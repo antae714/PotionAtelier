@@ -47,6 +47,9 @@ class TutorialManagerComponent : public Component
 
 	// Æ©Åä¸®¾ó ÆË¾÷
 	class UIRenderComponenet* tuto_popup{ nullptr };
+	GameObject* tuto_popup_object{ nullptr };
+	GameObject* tuto_skip_object{ nullptr };
+	GameObject* tuto_Arrow_object{ nullptr };
 
 	bool on_tutorial{ false };
 	int step{ 0 };
@@ -103,6 +106,7 @@ private:
 	void Step9();
 	void Step10();
 	void Step11();
+	void NesxtScene();
 	void Step12();
 
 	void ShowUpperText();

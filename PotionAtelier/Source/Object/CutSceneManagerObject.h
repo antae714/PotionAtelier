@@ -9,13 +9,18 @@ public:
 	CutSceneObject();
 	virtual ~CutSceneObject() override;
 	class CutSceneComponet* componenet;
+
+	void Skip();
 };
+
 class CutSceneManagerObject : public GameObject
 {
 	SERIALIZED_OBJECT(CutSceneManagerObject);
 public:
 	CutSceneManagerObject();
 	virtual ~CutSceneManagerObject() override;
+
+	void Skip();
 };
 
 
