@@ -526,11 +526,11 @@ imgui.ini
 !Source/GA6thFinal_Framework/GameEngine/ThirdParty/
 !Source/GA6thFinal_Framework/GameEngine/ThirdParty/**/*
 
-*
-!/PotionAtelier/
-!/PotionAtelier/Resource/
-!/PotionAtelier/Resource/Shader/
-!/PotionAtelier/Resource/Shader/**
+#*
+#!/PotionAtelier/
+#!/PotionAtelier/Resource/
+#!/PotionAtelier/Resource/Shader/
+#!/PotionAtelier/Resource/Shader/**
 
 
 
